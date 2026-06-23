@@ -64,8 +64,10 @@ ul.pts li b{font-weight:600}
 /* month timeline (updates) */
 .months{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:13px;min-height:0}
 .mcol{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;padding:15px 16px;display:flex;flex-direction:column}
-.mcol .mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mcol .mh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
 .mcol .mn{font-family:var(--serif);font-size:18px;font-weight:600}
+.mcol .mhr{display:flex;align-items:center;gap:7px}
+.mpts{display:inline-flex;align-items:center;border-radius:9999px;padding:3px 10px;font-size:11px;font-weight:700;border:1px solid hsl(var(--border-strong));color:hsl(var(--fg));background:hsl(var(--bg));white-space:nowrap}
 .mcol ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
 .mcol li{font-size:12.5px;line-height:1.35;padding-left:15px;position:relative;color:hsl(var(--fg))}
 .mcol li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:hsl(var(--border-strong))}
@@ -294,26 +296,26 @@ slides.push(`<div class="slide lead" style="align-items:center;justify-content:c
 // 2 — APP STATUS (LIVE APP, from ProjectOS)
 slides.push(`<div class="slide">
  <div class="head"><div class="kicker"><span class="tick"></span> App status</div>
- <h2 class="headline">What is shipping on the live app: 40 points, May through August.</h2></div>
+ <h2 class="headline">What is shipping on the live app, May through August.</h2></div>
  <div class="body">
   <div class="months">
-   <div class="mcol"><div class="mh"><span class="mn">May</span><span class="badge b-succ">Wrapping</span></div><ul>
+   <div class="mcol"><div class="mh"><span class="mn">May</span><span class="mhr"><span class="mpts">4 pts</span><span class="badge b-succ">Wrapping</span></span></div><ul>
      <li class="lv">Vault File Auto-Labelling: correct labelling on upload (part 1)</li>
      <li class="lv">Automated pipeline for ingesting Heritage Books PDFs into the vault</li>
    </ul></div>
-   <div class="mcol"><div class="mh"><span class="mn">June</span><span class="badge b-info">In build</span></div><ul>
+   <div class="mcol"><div class="mh"><span class="mn">June</span><span class="mhr"><span class="mpts">12 pts</span><span class="badge b-info">In build</span></span></div><ul>
      <li>Document Management: inventory, labelling &amp; storage</li>
      <li>Large Document Handling: AI retrieval &amp; readability improvements</li>
      <li class="lv">Vault File Auto-Labelling: correct labelling on upload (part 2)</li>
      <li class="lv">AI Intelligence: natural language search across all customer data</li>
    </ul></div>
-   <div class="mcol"><div class="mh"><span class="mn">July</span><span class="badge b-neutral">Planned</span></div><ul>
+   <div class="mcol"><div class="mh"><span class="mn">July</span><span class="mhr"><span class="mpts">12 pts</span><span class="badge b-neutral">Planned</span></span></div><ul>
      <li>UX Research &amp; Design, Part 1: interviews, personas &amp; journey mapping</li>
      <li>API Layer: endpoints, auth, rate limiting &amp; documentation</li>
      <li>Version Control: history, draft/published states &amp; domain control</li>
      <li>Version Control: granular user-level visibility controls</li>
    </ul></div>
-   <div class="mcol"><div class="mh"><span class="mn">August</span><span class="badge b-neutral">Planned</span></div><ul>
+   <div class="mcol"><div class="mh"><span class="mn">August</span><span class="mhr"><span class="mpts">12 pts</span><span class="badge b-neutral">Planned</span></span></div><ul>
      <li>UX Research &amp; Design, Part 2: wireframes &amp; usability testing</li>
      <li>Insurance Sheet: formatting flexibility &amp; survivorship support</li>
      <li>Evaluation Engine: question set builder &amp; templates</li>
