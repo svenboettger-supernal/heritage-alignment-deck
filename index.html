@@ -173,14 +173,14 @@ text{font-family:var(--sans)}
 /* modal */
 .overlay{position:fixed;inset:0;background:hsl(var(--fg)/.42);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:50;padding:3vh 2vw}
 .overlay.open{display:flex}
-.modal{background:hsl(var(--bg));border:1px solid hsl(var(--border));border-radius:16px;width:min(1100px,96vw);max-height:94vh;overflow:auto;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
-.modal .mhead{position:sticky;top:0;background:hsl(var(--bg));border-bottom:1px solid hsl(var(--border));padding:18px 26px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;z-index:2}
+.modal{background:hsl(var(--bg));border:1px solid hsl(var(--border));border-radius:16px;width:min(1640px,97vw);max-height:95vh;overflow:auto;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+.modal .mhead{position:sticky;top:0;background:hsl(var(--bg));border-bottom:1px solid hsl(var(--border));padding:16px 30px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;z-index:2}
 .modal .mhead h2{font-size:var(--fs-head)}
 .modal .mhead .mk{font-size:var(--fs-label);font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:hsl(var(--muted-fg));margin-bottom:6px}
-.modal .mbody{padding:22px 26px 28px}
+.modal .mbody{padding:18px 30px 22px}
 .xbtn{flex:none;width:32px;height:32px;border-radius:9999px;border:1px solid hsl(var(--border));background:hsl(var(--card));font-size:16px;cursor:pointer;color:hsl(var(--fg))}
 .xbtn:hover{background:hsl(var(--action-subtle));border-color:hsl(var(--border-strong))}
-.glance{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:18px}
+.glance{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
 .gcard{border-radius:12px;padding:15px 17px;border:1px solid hsl(var(--border))}
 .gcard.old{background:hsl(var(--muted-bg))}
 .gcard.new{background:hsl(var(--card));border-color:hsl(var(--terra)/.4)}
@@ -197,7 +197,7 @@ text{font-family:var(--sans)}
 .bucket li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%}
 .bucket.same li::before{background:hsl(var(--slate))}.bucket.new li::before{background:hsl(var(--olive))}.bucket.miss li::before{background:hsl(var(--terra))}
 .bucket li .hi{font-weight:600}
-.callout{margin-top:16px;border-radius:12px;padding:14px 17px;background:hsl(var(--warn-bg));border:1px solid hsl(var(--warn-bd))}
+.callout{margin-top:14px;border-radius:12px;padding:14px 18px;background:hsl(var(--warn-bg));border:1px solid hsl(var(--warn-bd))}
 .callout h4{font-size:var(--fs-body);color:hsl(var(--warn-fg));margin-bottom:5px}.callout p{margin:0;font-size:var(--fs-body);line-height:1.5}
 .flow{display:flex;flex-direction:column;gap:8px}
 .fstep{display:grid;grid-template-columns:150px 1fr 190px;gap:14px;align-items:center;border:1px solid hsl(var(--border));border-radius:10px;padding:11px 14px;background:hsl(var(--card))}
@@ -379,7 +379,7 @@ slides.push(`<div class="slide">
    </div>
   </div>
   <div class="rightcol"><ul class="pts">
-   <li><b>The first build, Jun to Nov.</b> Foreman is the AI project manager. We demoed it on 6/16; Tom Sr liked it and Jess in Ops would use it most.</li>
+   <li><b>The first build, Jun to Nov.</b> Foreman is the AI project manager that runs the day-to-day: it captures meetings, writes the letters, and keeps work on track.</li>
    <li><b>Different product, not price drift.</b> The initial quote was a thin coordination layer over Outlook, Excel and SharePoint. The new SOW captures and transcribes meetings, writes the letters, answers by chat and voice, and is the full task workspace.</li>
    <li><b>One trade-off to weigh.</b> The new scope no longer forces a sign-off before a change is made, the safeguard Heritage asked for after changes kept slipping through unnoticed.</li>
   </ul>
@@ -402,9 +402,8 @@ slides.push(`<div class="slide">
    </div>
   </div>
   <div class="numpanel">
-   <div class="numrow"><div class="nh"><span class="nl">Heritage</span><span class="nv">~$90K &middot; TBD</span></div><div class="nd">A points-based build, so no standalone line to Heritage. Tom Jr signalled a "$90k no brainer", a willingness signal, not a quote. Pricing set at the kickoff.</div></div>
-   <div class="numrow"><div class="nh"><span class="nl">Resale &middot; repeatable</span><span class="nv">~$100K &middot; TBD</span></div><div class="nd">The priced, repeatable case for other family offices. Terraform-scripted to reproduce per client.</div></div>
-   <div class="numrow" style="background:hsl(var(--muted-bg)/.5)"><div class="nl" style="margin-bottom:6px">Their data stays theirs</div><div class="tagrow"><span class="badge b-succ">SOC 2</span><span class="badge b-info">Dedicated GCP project</span><span class="badge b-neutral">Same model, same accuracy</span></div></div>
+   <div class="numrow"><div class="nh"><span class="nl">Heritage private cloud</span><span class="nv">~$90K</span></div><div class="nd">Delivered as a points-based build, sequenced into the monthly plan rather than billed as a standalone line. Final scope and pricing confirmed at kickoff.</div></div>
+   <div class="numrow" style="background:hsl(var(--muted-bg)/.5)"><div class="nl" style="margin-bottom:6px">Your data stays protected</div><div class="tagrow"><span class="badge b-succ">SOC 2</span><span class="badge b-info">Dedicated GCP project</span><span class="badge b-neutral">Same model, same accuracy</span></div></div>
    <button class="dd" data-open="ov-llm"><span class="pl">+</span> Deep dive</button>
   </div>
  </div></div>${foot}</div>`);
