@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Heritage · State of the Build</title>
+<style>
+:root{
+  --bg:33 20% 97%; --card:30 8% 99%; --border:33 18% 80%; --border-strong:33 14% 67%;
+  --muted-bg:33 22% 89%; --muted-fg:33 10% 34%; --placeholder:33 12% 50%; --fg:33 4% 6%;
+  --action:167 16% 48%; --action-hover:167 14% 34%; --action-subtle:167 14% 90%;
+  --terra:9 41% 55%; --amber:32 73% 69%; --slate:196 13% 50%; --sand:19 46% 72%;
+  --olive:64 13% 45%; --burg:356 32% 37%; --char:210 1% 32%;
+  --succ-bg:139 76% 97%;--succ-fg:142 72% 29%;--succ-bd:141 79% 85%;
+  --warn-bg:48 100% 96%;--warn-fg:26 91% 37%;--warn-bd:48 97% 77%;
+  --info-bg:214 99% 97%;--info-fg:204 64% 44%;--info-bd:213 97% 87%;
+  --serif:'Lora','Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --sans:'Inter','Helvetica Neue',Arial,system-ui,sans-serif;
+  --mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:hsl(var(--bg));color:hsl(var(--fg));font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;overflow:hidden}
+h1,h2{font-family:var(--serif);font-weight:600;letter-spacing:-.02em;margin:0}
+h3,h4{font-family:var(--sans);margin:0}
+a{color:inherit;text-decoration:none}
+
+#stage{position:relative;height:min(89vh,calc(96vw*9/16));aspect-ratio:16/9;max-width:96vw;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:14px;box-shadow:0 24px 60px -28px rgba(0,0,0,.35);overflow:hidden}
+.slide{position:absolute;inset:0;padding:40px 50px 40px;display:none;flex-direction:column;opacity:0;transition:opacity .3s ease}
+.slide.active{display:flex;opacity:1}
+.head{flex:none}
+.kicker{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-fg));margin-bottom:11px;display:flex;align-items:center;gap:10px}
+.kicker .tick{width:22px;height:2px;background:hsl(var(--terra))}
+.headline{font-size:25px;line-height:1.22;max-width:34ch}
+.slide.lead .headline{font-size:34px;max-width:24ch}
+.sub{color:hsl(var(--muted-fg));font-size:13.5px;margin-top:9px;max-width:80ch}
+.body{flex:1;min-height:0;margin-top:18px;display:flex;flex-direction:column}
+
+ul.pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+ul.pts li{position:relative;padding-left:18px;font-size:14px;line-height:1.45}
+ul.pts li::before{content:"";position:absolute;left:0;top:7px;width:7px;height:7px;border-radius:2px;background:hsl(var(--terra))}
+ul.pts li b{font-weight:600}
+.muted{color:hsl(var(--muted-fg))}
+.small{font-size:12.5px}
+
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:9999px;padding:3px 10px;font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
+.b-succ{background:hsl(var(--succ-bg));color:hsl(var(--succ-fg));border-color:hsl(var(--succ-bd))}
+.b-warn{background:hsl(var(--warn-bg));color:hsl(var(--warn-fg));border-color:hsl(var(--warn-bd))}
+.b-info{background:hsl(var(--info-bg));color:hsl(var(--info-fg));border-color:hsl(var(--info-bd))}
+.b-neutral{background:hsl(var(--muted-bg));color:hsl(var(--muted-fg));border-color:hsl(var(--border-strong))}
+
+/* title */
+.factrow{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;min-height:0}
+.fact{background:hsl(var(--muted-bg));border:1px solid hsl(var(--border));border-radius:13px;padding:20px;display:flex;flex-direction:column;justify-content:center}
+.fact .l{font-size:10px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:hsl(var(--muted-fg))}
+.fact .v{font-family:var(--serif);font-size:23px;font-weight:600;line-height:1.12;margin:9px 0 8px}
+.fact .d{font-size:12px;color:hsl(var(--muted-fg));line-height:1.4}
+.links{flex:none;display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.links .lab{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:hsl(var(--muted-fg))}
+.linkchip{display:inline-flex;align-items:center;gap:6px;border:1px solid hsl(var(--border-strong));border-radius:9999px;padding:6px 13px;font-size:12.5px;font-weight:500;color:hsl(var(--action-hover));cursor:pointer}
+.linkchip:hover{background:hsl(var(--action-subtle));border-color:hsl(var(--action))}
+.linkchip .ar{font-size:13px}
+
+/* month timeline (updates) */
+.months{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:13px;min-height:0}
+.mcol{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;padding:15px 16px;display:flex;flex-direction:column}
+.mcol .mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mcol .mn{font-family:var(--serif);font-size:18px;font-weight:600}
+.mcol ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.mcol li{font-size:12.5px;line-height:1.35;padding-left:15px;position:relative;color:hsl(var(--fg))}
+.mcol li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:hsl(var(--border-strong))}
+.mcol li.lv::before{background:hsl(var(--succ-fg))}
+.threads{flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:14px}
+.tcard{border:1px solid hsl(var(--border));border-radius:11px;padding:12px 15px;background:hsl(var(--muted-bg)/.5)}
+.tcard .tl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-fg));margin-bottom:5px}
+.tcard p{margin:0;font-size:12.5px;line-height:1.4}
+
+/* plan groups */
+.groups{flex:1;display:grid;grid-template-columns:1.5fr 1fr 1fr .8fr;gap:13px;min-height:0}
+.grp{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;padding:15px 16px;display:flex;flex-direction:column}
+.grp .gt{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.grp .gt .gd{width:9px;height:9px;border-radius:3px}
+.item{padding:9px 0;border-bottom:1px solid hsl(var(--muted-bg))}
+.item:last-child{border-bottom:none}
+.item .nm{font-size:13px;font-weight:600}
+.item .meta{display:flex;justify-content:space-between;gap:8px;margin-top:3px}
+.item .wn{font-size:11px;color:hsl(var(--muted-fg))}
+.item .pr{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.grptot{margin-top:auto;padding-top:11px;border-top:1px solid hsl(var(--border-strong));display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.grptot .gl{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:hsl(var(--muted-fg))}
+.grptot .gv{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.totband{flex:none;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px;padding:12px 18px;background:hsl(var(--char));color:hsl(var(--bg));border-radius:12px}
+.totband .t1{font-size:13px}
+.totband .t1 b{font-family:var(--serif);font-size:16px}
+.totband .src{font-size:11.5px;color:hsl(var(--bg)/.7)}
+.totband .src a{color:hsl(var(--bg));border-bottom:1px solid hsl(var(--bg)/.4)}
+
+/* foreman */
+.cols2{flex:1;display:grid;grid-template-columns:1fr 1.25fr;gap:28px;min-height:0}
+.fillcard{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:13px;padding:20px;display:flex;flex-direction:column;justify-content:center}
+.lfor{display:flex;align-items:flex-end;gap:26px;justify-content:center;flex:1;max-height:280px;padding:10px 0}
+.lcol{text-align:center;width:120px;display:flex;flex-direction:column;justify-content:flex-end}
+.lcol .b{margin:0 auto;width:66px;border-radius:7px 7px 0 0;display:flex;align-items:flex-start;justify-content:center;color:#fff;font-weight:700;font-size:15px;padding-top:9px}
+.lcol .cap{font-size:13px;font-weight:600;margin-top:9px}
+.lcol .cap2{font-size:11.5px;color:hsl(var(--muted-fg))}
+.rightcol{display:flex;flex-direction:column;justify-content:center}
+.dd{display:inline-flex;align-items:center;gap:7px;background:hsl(var(--action));color:#fff;border:none;border-radius:9999px;padding:9px 16px;font-family:var(--sans);font-weight:500;font-size:13px;cursor:pointer;align-self:flex-start}
+.dd:hover{background:hsl(var(--action-hover))}
+.dd:focus-visible{outline:2px solid hsl(var(--action));outline-offset:2px}
+.dd .pl{font-size:15px;line-height:1}
+
+/* secure ops nested walls */
+.nest{flex:1;border:1px dashed hsl(var(--border-strong));border-radius:13px;padding:16px;display:flex;flex-direction:column;background:hsl(var(--muted-bg)/.4);min-height:0}
+.nest .wl{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-fg));margin-bottom:10px}
+.nest .heritagebox{flex:1;background:hsl(var(--char));border-radius:11px;padding:15px;display:flex;flex-direction:column;min-height:0}
+.nest .heritagebox .wl{color:hsl(var(--bg)/.7)}
+.cells{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-height:0}
+.cell{background:hsl(var(--bg)/.12);border:1px solid hsl(var(--bg)/.22);border-radius:8px;padding:11px;color:hsl(var(--bg));display:flex;flex-direction:column;justify-content:space-between}
+.cell .cn{font-size:12px;font-weight:600}
+.cell .cv{font-size:10px;color:hsl(var(--bg)/.65)}
+.vaultcore{margin-top:10px;background:hsl(var(--bg)/.16);border:1px solid hsl(var(--bg)/.3);border-radius:8px;padding:9px 12px;color:hsl(var(--bg));font-size:11.5px;text-align:center}
+.numpanel{display:flex;flex-direction:column;justify-content:center;gap:13px}
+.numrow{border:1px solid hsl(var(--border));border-radius:11px;padding:13px 16px;background:hsl(var(--card))}
+.numrow .nh{display:flex;align-items:baseline;justify-content:space-between}
+.numrow .nl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-fg))}
+.numrow .nv{font-family:var(--serif);font-size:24px;font-weight:600}
+.numrow .nd{font-size:12px;color:hsl(var(--muted-fg));margin-top:4px;line-height:1.4}
+.tagrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
+
+/* closing */
+.threadgrid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:13px;min-height:0}
+.thr{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;padding:15px 18px;display:flex;gap:13px;align-items:flex-start}
+.thr .q{flex:none;width:26px;height:26px;border-radius:7px;background:hsl(var(--char)/.1);color:hsl(var(--char));font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.thr h4{font-size:14px;margin-bottom:3px}
+.thr p{margin:0;font-size:12.5px;color:hsl(var(--muted-fg));line-height:1.42}
+.decgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:16px}
+.dcard{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:14px;padding:24px 22px;display:flex;flex-direction:column}
+.dcard .ic{width:42px;height:42px;border-radius:12px;background:hsl(var(--action-subtle));color:hsl(var(--action-hover));display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.dcard .ic svg{width:22px;height:22px}
+.dcard h4{font-size:16px;margin-bottom:9px}
+.dcard p{margin:0;font-size:13px;color:hsl(var(--muted-fg));line-height:1.55}
+.dcard .step{margin-top:auto;padding-top:18px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--placeholder))}
+.closeband{flex:none;display:grid;grid-template-columns:1.5fr 1fr;gap:24px;margin-top:14px;align-items:center}
+.rail{display:flex}
+.rail .node{flex:1;position:relative;padding-top:21px;text-align:center}
+.rail .node::before{content:"";position:absolute;top:6px;left:0;right:0;height:2px;background:hsl(var(--border-strong))}
+.rail .node:first-child::before{left:50%}.rail .node:last-child::before{right:50%}
+.rail .node .pin{position:absolute;top:1px;left:50%;transform:translateX(-50%);width:12px;height:12px;border-radius:50%;background:hsl(var(--card));border:2px solid hsl(var(--slate))}
+.rail .node.hot .pin{background:hsl(var(--terra));border-color:hsl(var(--terra))}
+.rail .node .dte{font-size:11.5px;font-weight:600}
+.rail .node .lbl{font-size:10.5px;color:hsl(var(--muted-fg));margin-top:2px}
+.linkcol{display:flex;flex-direction:column;gap:7px}
+.linkcol .lab{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:hsl(var(--muted-fg));margin-bottom:1px}
+.linkcol .row{display:flex;gap:7px;flex-wrap:wrap}
+
+.note{font-size:10.5px;color:hsl(var(--placeholder));margin-top:8px}
+.foot{flex:none;display:flex;justify-content:space-between;font-size:10px;color:hsl(var(--placeholder));margin-top:14px}
+text{font-family:var(--sans)}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:hsl(var(--fg)/.42);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:50;padding:3vh 2vw}
+.overlay.open{display:flex}
+.modal{background:hsl(var(--bg));border:1px solid hsl(var(--border));border-radius:16px;width:min(1100px,96vw);max-height:94vh;overflow:auto;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+.modal .mhead{position:sticky;top:0;background:hsl(var(--bg));border-bottom:1px solid hsl(var(--border));padding:18px 26px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;z-index:2}
+.modal .mhead h2{font-size:22px}
+.modal .mhead .mk{font-size:10.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:hsl(var(--muted-fg));margin-bottom:6px}
+.modal .mbody{padding:22px 26px 28px}
+.xbtn{flex:none;width:32px;height:32px;border-radius:9999px;border:1px solid hsl(var(--border));background:hsl(var(--card));font-size:16px;cursor:pointer;color:hsl(var(--fg))}
+.xbtn:hover{background:hsl(var(--action-subtle));border-color:hsl(var(--border-strong))}
+.glance{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:18px}
+.gcard{border-radius:12px;padding:15px 17px;border:1px solid hsl(var(--border))}
+.gcard.old{background:hsl(var(--muted-bg))}
+.gcard.new{background:hsl(var(--card));border-color:hsl(var(--terra)/.4)}
+.gcard .who{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:hsl(var(--muted-fg))}
+.gcard .price{font-family:var(--serif);font-size:28px;font-weight:600;margin:4px 0 2px}
+.gcard .term{font-size:12px;color:hsl(var(--muted-fg))}
+.gcard .desc{font-size:12.5px;margin-top:9px;line-height:1.45}
+.buckets{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.bucket{border:1px solid hsl(var(--border));border-radius:12px;padding:14px 15px;background:hsl(var(--card))}
+.bucket h4{font-size:13.5px;display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.bucket .cnt{font-family:var(--mono);font-size:10.5px;color:hsl(var(--muted-fg))}
+.bucket ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.bucket li{font-size:11.5px;line-height:1.35;padding-left:15px;position:relative}
+.bucket li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%}
+.bucket.same li::before{background:hsl(var(--slate))}.bucket.new li::before{background:hsl(var(--olive))}.bucket.miss li::before{background:hsl(var(--terra))}
+.bucket li .hi{font-weight:600}
+.callout{margin-top:16px;border-radius:12px;padding:14px 17px;background:hsl(var(--warn-bg));border:1px solid hsl(var(--warn-bd))}
+.callout h4{font-size:13.5px;color:hsl(var(--warn-fg));margin-bottom:5px}.callout p{margin:0;font-size:12.5px;line-height:1.5}
+.flow{display:flex;flex-direction:column;gap:8px}
+.fstep{display:grid;grid-template-columns:150px 1fr 190px;gap:14px;align-items:center;border:1px solid hsl(var(--border));border-radius:10px;padding:10px 13px;background:hsl(var(--card))}
+.fstep .st{font-size:12.5px;font-weight:600}.fstep .st .loc{display:block;font-size:10.5px;color:hsl(var(--muted-fg));font-weight:400}
+.fstep .wh{font-size:12px;line-height:1.4}
+.fstep .cross{font-size:11.5px;color:hsl(var(--muted-fg));border-left:1px solid hsl(var(--border));padding-left:12px}.fstep .cross b{color:hsl(var(--fg))}
+.mwalls{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:8px}
+.tier{border-radius:12px;padding:14px 16px;border:1px solid hsl(var(--border))}
+.tier .tt{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-fg));margin-bottom:9px}
+.tier.ctrl{background:hsl(var(--muted-bg))}.tier.ded{background:hsl(var(--char));color:hsl(var(--bg))}.tier.ded .tt{color:hsl(var(--bg)/.7)}
+.tier .chip2{display:inline-block;border-radius:7px;padding:5px 9px;font-size:11px;margin:0 5px 6px 0;border:1px solid}
+.tier.ctrl .chip2{background:hsl(var(--card));border-color:hsl(var(--border))}.tier.ded .chip2{background:hsl(var(--bg)/.1);border-color:hsl(var(--bg)/.25);color:hsl(var(--bg))}
+table.cmp{width:100%;border-collapse:collapse;font-size:12.5px}
+table.cmp th{text-align:left;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-fg));padding:0 14px 9px;border-bottom:1px solid hsl(var(--border-strong))}
+table.cmp td{padding:11px 14px;border-bottom:1px solid hsl(var(--muted-bg));line-height:1.4;vertical-align:top}
+table.cmp td.dim{font-weight:600;color:hsl(var(--fg));width:22%}
+table.cmp th:last-child,table.cmp td:last-child{background:hsl(var(--action-subtle)/.45)}
+table.cmp tr:last-child td{border-bottom:none}
+.subtabs{display:flex;gap:8px;margin-bottom:16px}
+.subtab{border:1px solid hsl(var(--border));background:hsl(var(--card));border-radius:9999px;padding:7px 15px;font-size:12px;font-weight:500;cursor:pointer;color:hsl(var(--fg))}
+.subtab.on{background:hsl(var(--action));color:#fff;border-color:hsl(var(--action))}
+.tabpane{display:none}.tabpane.on{display:block}
+
+#nav{position:relative;display:flex;align-items:center;gap:11px;z-index:20;opacity:.85}
+#nav:hover{opacity:1}
+#dots{display:flex;gap:6px}
+#dots button{width:6px;height:6px;border-radius:50%;border:none;padding:0;background:hsl(var(--border-strong));cursor:pointer;transition:all .2s}
+#dots button.on{background:hsl(var(--action));width:18px;border-radius:9999px}
+.navbtn{background:transparent;color:hsl(var(--action-hover));border:1px solid hsl(var(--border-strong));border-radius:9999px;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.navbtn:hover{background:hsl(var(--action-subtle))}
+.navbtn:focus-visible{outline:2px solid hsl(var(--action));outline-offset:2px}
+#counter{position:fixed;bottom:17px;right:22px;font-size:11px;color:hsl(var(--placeholder));font-variant-numeric:tabular-nums;z-index:20}
+
+@media print{body{display:block;overflow:visible}#stage{width:100%;aspect-ratio:auto;box-shadow:none;border:none}.slide{display:flex!important;opacity:1!important;position:relative;page-break-after:always;height:100vh}#nav,#counter,.overlay{display:none}}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="nav"><button class="navbtn" id="prev" aria-label="Previous">&#8249;</button><div id="dots"></div><button class="navbtn" id="next" aria-label="Next">&#8250;</button></div>
+<div id="counter"></div>
+
+<!-- ===== MODAL: Foreman ===== -->
+<div class="overlay" id="ov-foreman">
+ <div class="modal"><div class="mhead"><div><div class="mk">Deep dive &middot; Foreman pricing</div><h2>New SOW vs the initial proposal: what changed and why the number moved</h2></div><button class="xbtn" data-close>&times;</button></div>
+  <div class="mbody">
+   <div class="glance">
+    <div class="gcard old"><div class="who">Initial proposal</div><div class="price">$4,000<span style="font-size:15px;font-weight:400">/mo</span></div><div class="term">16 weeks &middot; billed quarterly</div><div class="desc"><b>An accountability layer over the Microsoft stack.</b> Sits on top of Outlook, Excel and SharePoint, syncs the existing tracker, enforces change-approval, reads the letters Heritage already writes. Five tightly-scoped governance modules.</div></div>
+    <div class="gcard new"><div class="who">New SOW</div><div class="price">$7,000<span style="font-size:15px;font-weight:400">/mo</span></div><div class="term">6 months &middot; 3 phases, each ships usable work</div><div class="desc"><b>A project operating system that replaces the tools.</b> Captures and transcribes meetings, writes the letters, answers by chat and voice, becomes the full task workspace. Broader product surface, less of the original governance enforcement.</div></div>
+   </div>
+   <div class="buckets">
+    <div class="bucket same"><h4><span style="width:8px;height:8px;border-radius:50%;background:hsl(var(--slate));display:inline-block"></span>Same</h4><div class="cnt">9 carried over</div>
+     <ul><li>Review-cadence tracking</li><li>On Track / At Risk / Critical status</li><li>Action-item extraction with dedup</li><li>Completeness gate: owner + due date</li><li>Daily accountability digest</li><li>Outlook as read-only source of truth</li><li>Timestamped audit trail</li><li>One-time Excel + SharePoint migration</li></ul></div>
+    <div class="bucket new"><h4><span style="width:8px;height:8px;border-radius:50%;background:hsl(var(--olive));display:inline-block"></span>New</h4><div class="cnt">8 committed + 4 optional</div>
+     <ul><li><span class="hi">Captures, transcribes meetings, writes the letter</span></li><li>Ask Anything by chat or voice</li><li>Inbound task creation by message or call</li><li>Full collaborative task workspace</li><li>Multi-channel notifications incl. Teams</li><li>Morning brief + end-of-day digest</li><li>Dated outcome commitments (Jul / Sep)</li><li class="muted">Optional: Kanban/calendar/Gantt, mobile, CRM sync, email scanning</li></ul></div>
+    <div class="bucket miss"><h4><span style="width:8px;height:8px;border-radius:50%;background:hsl(var(--terra));display:inline-block"></span>Missing</h4><div class="cnt">9 gaps vs initial</div>
+     <ul><li><span class="hi">No enforced change-control gate</span> the "silent changes" pain Heritage raised</li><li>No required-document chase with escalation</li><li>No two-way Outlook to Excel sync (by design)</li><li>No cause-attribution on missed work</li><li>No carry-forward / classification</li><li>No Microsoft Planner integration</li><li>No per-module effort estimates</li></ul></div>
+   </div>
+   <div class="callout"><h4>Reading the comparison</h4><p>The two products are genuinely different, replace vs augment, so the $4K to $7K move (+75%) tracks scope, not price drift. The "roughly 3x" reaction came from comparing combined Foreman + CRM against the old Foreman-only quote. Levers if Heritage wants them: hold $7K/mo on the product surface, keep CRM as its own line, and the one gap worth weighing is the change-control gate Heritage explicitly asked for.</p></div>
+  </div></div>
+</div>
+
+<!-- ===== MODAL: Secure ops ===== -->
+<div class="overlay" id="ov-llm">
+ <div class="modal"><div class="mhead"><div><div class="mk">Deep dive &middot; Secure operations</div><h2>How Heritage data is handled today, and the dedicated private cloud</h2></div><button class="xbtn" data-close>&times;</button></div>
+  <div class="mbody">
+   <div class="subtabs"><button class="subtab on" data-tab="compare">Today vs dedicated tenant</button><button class="subtab" data-tab="cost">Pricing &amp; timeline</button></div>
+   <div class="tabpane on" id="tab-compare">
+    <p class="small muted" style="margin:0 0 16px;max-width:90ch">Heritage data already runs in a Supernal-controlled cloud, on frontier models that never train on it. The dedicated tenant moves Heritage into its own isolated Google Cloud project. The model and the accuracy do not change, only the isolation does.</p>
+    <table class="cmp">
+     <thead><tr><th></th><th>Today</th><th>Dedicated tenant</th></tr></thead>
+     <tbody>
+      <tr><td class="dim">Cloud project</td><td>Shared Supernal project on Google Cloud</td><td>A Google Cloud project for Heritage alone</td></tr>
+      <tr><td class="dim">Network</td><td>Standard internal routing</td><td>Private tunnel, never shares a model endpoint</td></tr>
+      <tr><td class="dim">Models &amp; accuracy</td><td>Frontier models on Vertex AI, under a BAA</td><td>Same models, same accuracy</td></tr>
+      <tr><td class="dim">Data &amp; training</td><td>Stored in our secure vault, never trained on</td><td>Unchanged, fully isolated from other customers</td></tr>
+      <tr><td class="dim">Audit &amp; access</td><td>RBAC, SOC 2 in place</td><td>Heritage gets its own audit logs, can review anytime</td></tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="tabpane" id="tab-cost">
+    <div class="gcard new" style="margin-bottom:16px"><div class="who">Heritage &middot; points-based</div><div class="price">~$90K &middot; TBD</div><div class="term">Tom Jr signalled a "$90k no brainer" &middot; willingness, not a quote</div><div class="desc">A points-based build, so it does not surface as a standalone line to Heritage. Pricing is set with the team at the 6/24 kickoff.</div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px"><tr><td style="padding:9px 10px;border-bottom:1px solid hsl(var(--muted-bg));color:hsl(var(--muted-fg))">Inference cost (Vertex AI)</td><td style="padding:9px 10px;border-bottom:1px solid hsl(var(--muted-bg))">~$1 to $4 per million tokens</td></tr><tr><td style="padding:9px 10px;border-bottom:1px solid hsl(var(--muted-bg));color:hsl(var(--muted-fg))">Build timeline</td><td style="padding:9px 10px;border-bottom:1px solid hsl(var(--muted-bg))">~1 month internal, ~2 months external</td></tr><tr><td style="padding:9px 10px;border-bottom:1px solid hsl(var(--muted-bg));color:hsl(var(--muted-fg))">Compliance</td><td style="padding:9px 10px;border-bottom:1px solid hsl(var(--muted-bg))">SOC 2 (HIPAA likely not required for Heritage)</td></tr><tr><td style="padding:9px 10px;color:hsl(var(--muted-fg))">Reusability</td><td style="padding:9px 10px">Terraform-scripted, repeatable per client</td></tr></table>
+   </div>
+  </div></div>
+</div>
+
+<script>
+const PAL={terra:'9 41% 55%',amber:'32 73% 69%',slate:'196 13% 50%',sand:'19 46% 72%',olive:'64 13% 45%',burg:'356 32% 37%',char:'210 1% 32%'};
+const C=k=>`hsl(${PAL[k]})`;
+const L={prop:'https://svenboettger-supernal.github.io/heritage-proposals/',demo:'https://svenboettger-supernal.github.io/heritage-demo/#/foreman/rundown',road:'https://svenboettger-supernal.github.io/heritage-ai-roadmap/',cost:'https://svenboettger-supernal.github.io/heritage-integration-costs/#breakdown',pms:'https://supernal-pms-production.up.railway.app/projects/576939f4-5e3c-4044-b42b-16e30b10d9bb/overview'};
+const foot='';
+const slides=[];
+
+// 1 — TITLE
+slides.push(`<div class="slide lead" style="align-items:center;justify-content:center;text-align:center;padding:40px 60px">
+ <div class="kicker" style="justify-content:center;margin-bottom:18px"><span class="tick"></span> Heritage</div>
+ <h1 class="headline" style="max-width:24ch">The live Heritage AI app, and the next wave of builds up for negotiation.</h1>
+ <div class="links" style="justify-content:center;margin-top:34px">
+  <a class="linkchip" href="${L.prop}" target="_blank">Proposals hub <span class="ar">&#8599;</span></a>
+  <a class="linkchip" href="${L.demo}" target="_blank">Foreman demo <span class="ar">&#8599;</span></a>
+  <a class="linkchip" href="${L.road}" target="_blank">AI roadmap <span class="ar">&#8599;</span></a>
+  <a class="linkchip" href="${L.cost}" target="_blank">Integration costs <span class="ar">&#8599;</span></a>
+ </div>${foot}</div>`);
+
+// 2 — APP STATUS (LIVE APP, from ProjectOS)
+slides.push(`<div class="slide">
+ <div class="head"><div class="kicker"><span class="tick"></span> App status</div>
+ <h2 class="headline">What is shipping on the live app, May through August.</h2></div>
+ <div class="body">
+  <div class="months">
+   <div class="mcol"><div class="mh"><span class="mn">May</span><span class="badge b-succ">Wrapping</span></div><ul>
+     <li class="lv">Vault File Auto-Labelling: correct labelling on upload (part 1)</li>
+     <li class="lv">Automated pipeline for ingesting Heritage Books PDFs into the vault</li>
+   </ul></div>
+   <div class="mcol"><div class="mh"><span class="mn">June</span><span class="badge b-info">In build</span></div><ul>
+     <li>Document Management: inventory, labelling &amp; storage</li>
+     <li>Large Document Handling: AI retrieval &amp; readability improvements</li>
+     <li class="lv">Vault File Auto-Labelling: correct labelling on upload (part 2)</li>
+     <li class="lv">AI Intelligence: natural language search across all customer data</li>
+   </ul></div>
+   <div class="mcol"><div class="mh"><span class="mn">July</span><span class="badge b-neutral">Planned</span></div><ul>
+     <li>UX Research &amp; Design, Part 1: interviews, personas &amp; journey mapping</li>
+     <li>API Layer: endpoints, auth, rate limiting &amp; documentation</li>
+     <li>Version Control: history, draft/published states &amp; domain control</li>
+     <li>Version Control: granular user-level visibility controls</li>
+   </ul></div>
+   <div class="mcol"><div class="mh"><span class="mn">August</span><span class="badge b-neutral">Planned</span></div><ul>
+     <li>UX Research &amp; Design, Part 2: wireframes &amp; usability testing</li>
+     <li>Insurance Sheet: formatting flexibility &amp; survivorship support</li>
+     <li>Evaluation Engine: question set builder &amp; templates</li>
+     <li>Evaluation Engine: runner, results queue &amp; QA dashboard</li>
+     <li>Admin: usage analytics, reporting &amp; accuracy dashboard</li>
+   </ul></div>
+  </div>
+  <div class="totband">
+   <div class="t1">In addition, a <b>private LLM for Heritage</b> will be added as a new workstream, starting from July.</div>
+   <span class="badge b-info">New &middot; from July</span>
+  </div>
+ </div>${foot}</div>`);
+
+// 3 — THE PROPOSAL (PROSPECTIVE)
+slides.push(`<div class="slide">
+ <div class="head"><div class="kicker"><span class="tick"></span> The proposal</div>
+ <h2 class="headline">The proposed road to AI-native for Heritage.</h2></div>
+ <div class="body">
+  <div class="groups">
+   <div class="grp"><div class="gt"><span class="gd" style="background:${C('terra')}"></span>AI Employees</div>
+    <div class="item"><div class="nm">Foreman &middot; Project Manager</div><div class="meta"><span class="wn">Foundation &middot; Jun&ndash;Nov</span><span class="pr">$7K/mo</span></div></div>
+    <div class="item"><div class="nm">Hank &middot; CRM</div><div class="meta"><span class="wn">Build &amp; Content &middot; Jul&ndash;Dec</span><span class="pr">$5K/mo</span></div></div>
+    <div class="item"><div class="nm">Celeste &middot; Help Desk</div><div class="meta"><span class="wn">Support &middot; Jan&ndash;Mar 27</span><span class="pr">$7K/mo</span></div></div>
+    <div class="item"><div class="nm">Stephen &middot; Content Marketing</div><div class="meta"><span class="wn">Build &amp; Content &middot; Jul&ndash;Sep</span><span class="pr">$4K/mo</span></div></div>
+    <div class="grptot"><span class="gl">Total</span><span class="gv">$23K/mo</span></div>
+   </div>
+   <div class="grp"><div class="gt"><span class="gd" style="background:${C('slate')}"></span>Private LLM</div>
+    <div class="item"><div class="nm">Heritage private cloud</div><div class="meta"><span class="wn">Jun&ndash;Aug &middot; pending raise</span><span class="pr">~$90K &middot; TBD</span></div></div>
+    <div class="small" style="margin-top:9px;color:hsl(var(--warn-fg));background:hsl(var(--warn-bg));border:1px solid hsl(var(--warn-bd));border-radius:8px;padding:8px 10px;font-size:11px;line-height:1.4">Tom Jr: &ldquo;no brainer at $90k.&rdquo; To be confirmed.</div>
+    <button class="dd" data-open="ov-llm" style="margin-top:11px;font-size:12px;padding:7px 13px"><span class="pl">+</span> Deep dive</button>
+    <div class="grptot"><span class="gl">Total</span><span class="gv">~$90K &middot; TBD</span></div>
+   </div>
+   <div class="grp"><div class="gt"><span class="gd" style="background:${C('amber')}"></span>Marketing</div>
+    <div class="item"><div class="nm">Two websites</div><div class="meta"><span class="wn">Jun&ndash;Jul, Oct&ndash;Nov</span><span class="pr">$12.5K</span></div></div>
+    <div class="item"><div class="nm">Brand video bundle</div><div class="meta"><span class="wn">Jun</span><span class="pr">$10K</span></div></div>
+    <div class="grptot"><span class="gl">Total &middot; one-time</span><span class="gv">$22.5K</span></div>
+   </div>
+   <div class="grp"><div class="gt"><span class="gd" style="background:${C('olive')}"></span>Enablement</div>
+    <div class="item"><div class="nm">Training + adoption</div><div class="meta"><span class="wn">ongoing</span><span class="pr">$1K/mo</span></div>
+     <div class="small" style="margin-top:7px;color:hsl(var(--warn-fg));background:hsl(var(--warn-bg));border:1px solid hsl(var(--warn-bd));border-radius:8px;padding:6px 9px;font-size:10.5px;line-height:1.35">New for us. Approach undefined, and likely not the moment to introduce it.</div>
+    </div>
+    <div class="grptot"><span class="gl">Total</span><span class="gv">$1K/mo</span></div>
+   </div>
+  </div>
+ </div>${foot}</div>`);
+
+// 4 — FOREMAN
+slides.push(`<div class="slide">
+ <div class="head"><div class="kicker"><span class="tick"></span> Foreman</div>
+ <h2 class="headline">Foreman grew into a full operating system, which moved the price.</h2></div>
+ <div class="body"><div class="cols2">
+  <div class="fillcard">
+   <div class="lfor">
+    <div class="lcol"><div class="b" style="height:100px;background:${C('char')}">$4K</div><div class="cap">Initial</div><div class="cap2">/mo &middot; 4 months</div></div>
+    <div class="lcol"><div class="b" style="height:175px;background:${C('terra')}">$7K</div><div class="cap">New SOW</div><div class="cap2">/mo &middot; 6 months</div></div>
+   </div>
+  </div>
+  <div class="rightcol"><ul class="pts">
+   <li><b>The first build, Jun to Nov.</b> Foreman is the AI project manager. We demoed it on 6/16; Tom Sr liked it and Jess in Ops would use it most.</li>
+   <li><b>Different product, not price drift.</b> The initial quote was a thin coordination layer over Outlook, Excel and SharePoint. The new SOW captures and transcribes meetings, writes the letters, answers by chat and voice, and is the full task workspace.</li>
+   <li><b>One trade-off to weigh.</b> The new scope no longer forces a sign-off before a change is made, the safeguard Heritage asked for after changes kept slipping through unnoticed.</li>
+  </ul>
+  <button class="dd" data-open="ov-foreman" style="margin-top:18px"><span class="pl">+</span> Full comparison</button></div>
+ </div></div>${foot}</div>`);
+
+// 5 — SECURE OPS
+slides.push(`<div class="slide">
+ <div class="head"><div class="kicker"><span class="tick"></span> Secure private LLM</div>
+ <h2 class="headline">Heritage and its clients get a private corner of the cloud no other customer can reach.</h2></div>
+ <div class="body"><div class="cols2">
+  <div class="nest"><div class="wl">Every other Supernal customer</div>
+   <div class="heritagebox"><div class="wl">Wall 1 &middot; Heritage private cloud</div>
+    <div class="cells">
+     <div class="cell"><div class="cn">Client A</div><div class="cv">own folder &middot; RBAC</div></div>
+     <div class="cell"><div class="cn">Client B</div><div class="cv">own folder &middot; RBAC</div></div>
+     <div class="cell"><div class="cn">Client C</div><div class="cv">own folder &middot; RBAC</div></div>
+    </div>
+    <div class="vaultcore">Wall 2 &middot; vault we control &middot; insights out, no training</div>
+   </div>
+  </div>
+  <div class="numpanel">
+   <div class="numrow"><div class="nh"><span class="nl">Heritage</span><span class="nv">~$90K &middot; TBD</span></div><div class="nd">A points-based build, so no standalone line to Heritage. Tom Jr signalled a "$90k no brainer", a willingness signal, not a quote. Pricing set at the kickoff.</div></div>
+   <div class="numrow"><div class="nh"><span class="nl">Resale &middot; repeatable</span><span class="nv">~$100K &middot; TBD</span></div><div class="nd">The priced, repeatable case for other family offices. Terraform-scripted to reproduce per client.</div></div>
+   <div class="numrow" style="background:hsl(var(--muted-bg)/.5)"><div class="nl" style="margin-bottom:6px">Their data stays theirs</div><div class="tagrow"><span class="badge b-succ">SOC 2</span><span class="badge b-info">Dedicated GCP project</span><span class="badge b-neutral">Same model, same accuracy</span></div></div>
+   <button class="dd" data-open="ov-llm"><span class="pl">+</span> Deep dive</button>
+  </div>
+ </div></div>${foot}</div>`);
+
+// 6 — FOR THIS ROOM
+slides.push(`<div class="slide">
+ <div class="head"><div class="kicker"><span class="tick"></span> Open decisions</div>
+ <h2 class="headline">Next steps.</h2></div>
+ <div class="body">
+  <div class="decgrid">
+   <div class="dcard">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+    <h4>Pace &amp; payment</h4>
+    <p>We are already delivering the full 12 points in June, at the $90K/mo pace, and plan to keep going. Payment has not landed yet, so Heritage needs to speed up the raise and pay for what we are shipping now.</p>
+    <div class="step">Decision 01</div>
+   </div>
+   <div class="dcard">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+    <h4>Pricing &amp; comms</h4>
+    <p>Pricing for the new builds, Foreman, Hank, Celeste, Stephen and the private LLM. Ryan walks Heritage through it tomorrow. We then sequence it through the points model, stretching the timeline so the spend lands comfortably.</p>
+    <div class="step">Decision 02</div>
+   </div>
+   <div class="dcard">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    <h4>Engineering capacity</h4>
+    <p>Depending on what else Heritage buys, we ramp up engineering. Naveen is already informed. The new scope likely means two to three more Masons to hold the pace.</p>
+    <div class="step">Decision 03</div>
+   </div>
+   <div class="dcard">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div>
+    <h4>Final roadmap</h4>
+    <p>If we all align on scope and pricing, Sven puts together the final roadmap proposal, the single plan Heritage signs off on.</p>
+    <div class="step">Decision 04</div>
+   </div>
+  </div>
+ </div>${foot}</div>`);
+
+// runtime
+const stage=document.getElementById('stage');
+stage.innerHTML=slides.join('');
+const slideEls=[...stage.querySelectorAll('.slide')];
+const dotsWrap=document.getElementById('dots');
+slideEls.forEach((_,i)=>{const b=document.createElement('button');b.onclick=()=>go(i);dotsWrap.appendChild(b)});
+const dots=[...dotsWrap.children];
+let cur=0;
+function go(i){cur=Math.max(0,Math.min(slideEls.length-1,i));slideEls.forEach((s,j)=>s.classList.toggle('active',j===cur));dots.forEach((d,j)=>d.classList.toggle('on',j===cur));document.getElementById('counter').textContent=(cur+1)+' / '+slideEls.length}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+function anyOpen(){return document.querySelector('.overlay.open')}
+function closeAll(){document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'))}
+document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{closeAll();document.getElementById(b.dataset.open).classList.add('open')});
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeAll);
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeAll()}));
+document.querySelectorAll('.subtab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.subtab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));t.classList.add('on');document.getElementById('tab-'+t.dataset.tab).classList.add('on')});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeAll();return}
+  if(anyOpen())return;
+  if(e.target.tagName==='BUTTON'&&e.key===' ')return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1)}
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}
+  if(e.key==='Home')go(0);if(e.key==='End')go(slideEls.length-1);
+});
+go(0);
+</script>
+</body>
+</html>
