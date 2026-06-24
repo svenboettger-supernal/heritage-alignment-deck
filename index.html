@@ -304,6 +304,22 @@ slides.push(`<div class="slide lead" style="align-items:center;justify-content:c
   <a class="linkchip" href="${L.cost}" target="_blank">Integration costs <span class="ar">&#8599;</span></a>
  </div>${foot}</div>`);
 
+// 1b — AGENDA
+slides.push(`<div class="slide">
+ <div class="head"><div class="kicker"><span class="tick"></span> Agenda</div>
+ <h2 class="headline">Wednesday's agenda.</h2></div>
+ <div class="body">
+  <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;justify-content:center">
+   <div class="thr"><div class="q">1</div><div><h4>Marketing</h4><p>The marketing efforts Heritage wants to deploy.</p></div></div>
+   <div class="thr"><div class="q">2</div><div><h4>The three apps</h4><p>Foreman, CRM and Help Desk. Timing and resource allocation decisions for each.</p></div></div>
+   <div class="thr"><div class="q">3</div><div><h4>Security &amp; private cloud</h4><p>The dedicated private environment discussion.</p></div></div>
+  </div>
+  <div style="flex:none;margin-top:16px;border:1px solid hsl(var(--border-strong));border-radius:12px;padding:16px 20px;background:hsl(var(--muted-bg)/.5);display:flex;align-items:flex-start;gap:14px">
+   <span class="badge b-warn" style="flex:none">Suggested order</span>
+   <p style="margin:0;font-size:var(--fs-body);line-height:1.5">Tom Jr. suggested opening with security. Its fundraising implications make it the priority, and leaving it last risks running out of time.</p>
+  </div>
+ </div>${foot}</div>`);
+
 // 2 — APP STATUS (LIVE APP, from ProjectOS)
 slides.push(`<div class="slide">
  <div class="head"><div class="kicker"><span class="tick"></span> App status</div>
@@ -409,33 +425,6 @@ slides.push(`<div class="slide">
    <button class="dd" data-open="ov-llm"><span class="pl">+</span> Deep dive</button>
   </div>
  </div></div>${foot}</div>`);
-
-// 6 — FOR THIS ROOM
-slides.push(`<div class="slide">
- <div class="head"><div class="kicker"><span class="tick"></span> Open decisions</div>
- <h2 class="headline">Next steps.</h2></div>
- <div class="body">
-  <div class="decgrid">
-   <div class="dcard">
-    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-    <h4>Pace &amp; funding</h4>
-    <p>We confirm funding timing together so delivery keeps moving at the full monthly pace.</p>
-    <div class="step">Decision 01</div>
-   </div>
-   <div class="dcard">
-    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
-    <h4>Pricing walkthrough</h4>
-    <p>Ryan walks you through pricing for the new builds tomorrow: Foreman, Hank, Celeste, Stephen and the private environment.</p>
-    <div class="step">Decision 02</div>
-   </div>
-   <div class="dcard">
-    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div>
-    <h4>Final roadmap</h4>
-    <p>We align on scope and pricing, then bring it into a single roadmap for you to sign off.</p>
-    <div class="step">Decision 03</div>
-   </div>
-  </div>
- </div>${foot}</div>`);
 
 // runtime
 const stage=document.getElementById('stage');
