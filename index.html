@@ -148,7 +148,7 @@ ul.pts li b{font-weight:600}
 .thr .q{flex:none;width:30px;height:30px;border-radius:7px;background:hsl(var(--char)/.1);color:hsl(var(--char));font-weight:700;font-size:var(--fs-body);display:flex;align-items:center;justify-content:center}
 .thr h4{font-size:var(--fs-title);margin-bottom:4px}
 .thr p{margin:0;font-size:var(--fs-body);color:hsl(var(--muted-fg));line-height:1.45}
-.decgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:16px}
+.decgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:auto;gap:16px;overflow-y:auto;align-content:stretch;padding-right:4px}
 .dcard{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:14px;padding:24px 22px;display:flex;flex-direction:column}
 .dcard .ic{width:42px;height:42px;border-radius:12px;background:hsl(var(--action-subtle));color:hsl(var(--action-hover));display:flex;align-items:center;justify-content:center;margin-bottom:18px}
 .dcard .ic svg{width:22px;height:22px}
@@ -419,7 +419,7 @@ slides.push(`<div class="slide">
    <div class="dcard">
     <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
     <h4>Pace &amp; payment</h4>
-    <p>We are already delivering the full 12 points in June, at the $90K/mo pace, and plan to keep going. Payment has not landed yet, so Heritage needs to speed up the raise and pay for what we are shipping now.</p>
+    <p>We are already shipping the full 12 points in June at the $90K/mo pace, and we are set up to keep that momentum going. The next step we work through together is timing the funding so we can begin invoicing for the work that is already live.</p>
     <div class="step">Decision 01</div>
    </div>
    <div class="dcard">
