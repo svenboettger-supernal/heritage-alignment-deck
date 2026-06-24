@@ -32,7 +32,9 @@ h1,h2{font-family:var(--serif);font-weight:600;letter-spacing:-.02em;margin:0}
 h3,h4{font-family:var(--sans);margin:0}
 a{color:inherit;text-decoration:none}
 
-#stage{position:relative;height:min(89vh,calc(96vw*9/16));aspect-ratio:16/9;max-width:96vw;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:14px;box-shadow:0 24px 60px -28px rgba(0,0,0,.35);overflow:hidden}
+#stage{position:relative;height:min(89vh,calc(96vw*9/16));aspect-ratio:16/9;max-width:96vw;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:14px;box-shadow:0 24px 60px -28px rgba(0,0,0,.35);overflow:hidden;container-type:size}
+/* fixed design canvas, uniformly scaled to fill the 16:9 stage at any screen size */
+#deck{position:absolute;top:0;left:0;width:1440px;height:810px;transform-origin:top left;transform:scale(calc(100cqw / 1440))}
 .slide{position:absolute;inset:0;padding:40px 50px 40px;display:none;flex-direction:column;opacity:0;transition:opacity .3s ease}
 .slide.active{display:flex;opacity:1}
 .head{flex:none}
@@ -231,7 +233,7 @@ table.cmp tr:last-child td{border-bottom:none}
 .navbtn:focus-visible{outline:2px solid hsl(var(--action));outline-offset:2px}
 #counter{position:fixed;bottom:17px;right:22px;font-size:var(--fs-label);color:hsl(var(--placeholder));font-variant-numeric:tabular-nums;z-index:20}
 
-@media print{body{display:block;overflow:visible}#stage{width:100%;aspect-ratio:auto;box-shadow:none;border:none}.slide{display:flex!important;opacity:1!important;position:relative;page-break-after:always;height:100vh}#nav,#counter,.overlay{display:none}}
+@media print{body{display:block;overflow:visible}#stage{width:100%;aspect-ratio:auto;box-shadow:none;border:none;container-type:normal}#deck{position:static;width:auto;height:auto;transform:none}.slide{display:flex!important;opacity:1!important;position:relative;page-break-after:always;height:100vh}#nav,#counter,.overlay{display:none}}
 </style>
 </head>
 <body>
@@ -443,7 +445,7 @@ slides.push(`<div class="slide">
 
 // runtime
 const stage=document.getElementById('stage');
-stage.innerHTML=slides.join('');
+stage.innerHTML='<div id="deck">'+slides.join('')+'</div>';
 const slideEls=[...stage.querySelectorAll('.slide')];
 const dotsWrap=document.getElementById('dots');
 slideEls.forEach((_,i)=>{const b=document.createElement('button');b.onclick=()=>go(i);dotsWrap.appendChild(b)});
